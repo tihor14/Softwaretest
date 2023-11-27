@@ -1,0 +1,10 @@
+Készits olyan kódot ami a holdjáróval feltérképezi a bolygót!
+
+Meg kell adni a kezdő (x,y) koordinátát, és azt, hogy merre néz a holdjáró (N, E, S, W)
+A holdjáró karakteres utasításokat kap
+Implementáld az előre/hátra parancsokat (f,b)
+Implementáld a balra/jobbra parancsokat (l,r)
+Kezeld le a térkép „széleit”
+Kezeld le, hogy a bolygók gömbök!
+A bolygón akadályok is vannak. Minden lépés előtt a holdjáró ellenőrzi, van-e akadály. Ha a holdjáró akadályt érzékel, akkor visszatér az utolsó pontra és jelenti az akadályt
+Szigorúan TDD elveket kell követni. nincs kivétel!oo

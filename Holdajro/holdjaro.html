@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Holdjáró</title>
+<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.0.css">
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
+    <script>
+        map =   [
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                ]
+        barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+        expected_map=  [
+                    [' ',' ',' ','x',' ',' ',' ','x'],
+                    [' ',' ',' ',' ',' ',' ','x',' '],
+                    [' ','x',' ',' ','x',' ',' ',' '],
+                    ['x',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ','x',' ',' ',' '],
+                    [' ',' ',' ','x',' ',' ',' ',' '],
+                    [' ','x',' ',' ',' ',' ',' ',' '],
+                    [' ',' ','x',' ',' ',' ',' ',' '],
+                ];
+        function setBarriers(map,barriers){
+            for(var i = 0; i < map.length; i++){
+                map_line = map[i];
+                for(var j = 0; j < map_line.length; j++) {
+                    for(var k = 0; k < barriers.length; k++){
+                        if(i+1 == barriers[k][0] && j+1==barriers[k][1]){
+                            map[i][j] = 'x';
+                        }
+                    }
+                    
+                }
+            }
+        }
+        //canStep(){}           //ha jók a szomszédok, akkor tud abba az irányba lépni
+        //swap(){}              //megfordul
+        //isBarrier(){}         //van e akadály
+        //step(){               //kap egy irányt hogy merre néz és egy utasítást, elvégzi a lépést
+
+       // }
+
+    QUnit.module('SetBarriers test', function() {
+        QUnit.test('4*4 mátrix esetén', function(assert) {
+            barriers=[[1,2]]
+            map = [[' ',' ', ' ', ' '],[' ',' ', ' ', ' '],[' ',' ', ' ', ' '],[' ',' ', ' ', ' ']]
+            // map = [[' ','x', ' ', ' '],[' ',' ', ' ', ' '],[' ',' ', ' ', ' '],[' ',' ', ' ', ' ']]
+            setBarriers(map, barriers)
+            assert.equal(map[0][1], 'x');
+        });
+        QUnit.test('8*8 mátrix esetén', function(assert) {
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            map =   [
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ',' ',' ',' '],
+                ]
+            expected_map=  [
+                    [' ',' ',' ','x',' ',' ',' ','x'],
+                    [' ',' ',' ',' ',' ',' ','x',' '],
+                    [' ','x',' ',' ','x',' ',' ',' '],
+                    ['x',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ','x',' ',' '],
+                    [' ',' ',' ','x',' ',' ',' ',' '],
+                    [' ','x',' ',' ',' ',' ',' ',' '],
+                    [' ',' ','x',' ',' ',' ',' ',' '],
+                ];
+            setBarriers(map, barriers)
+            assert.deepEqual(map, expected_map);
+        });
+    });
+    </script>
+
+</body>
