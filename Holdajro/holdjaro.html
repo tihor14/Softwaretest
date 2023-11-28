@@ -8,30 +8,12 @@
     <div id="qunit-fixture"></div>
     <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
     <script>
-        map =   [
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ',' ',' ',' ',' '],
-                ]
-        barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
-        expected_map=  [
-                    [' ',' ',' ','x',' ',' ',' ','x'],
-                    [' ',' ',' ',' ',' ',' ','x',' '],
-                    [' ','x',' ',' ','x',' ',' ',' '],
-                    ['x',' ',' ',' ',' ',' ',' ',' '],
-                    [' ',' ',' ',' ','x',' ',' ',' '],
-                    [' ',' ',' ','x',' ',' ',' ',' '],
-                    [' ','x',' ',' ',' ',' ',' ',' '],
-                    [' ',' ','x',' ',' ',' ',' ',' '],
-                ];
+        
+
+        
         function setBarriers(map,barriers){
             for(var i = 0; i < map.length; i++){
-                map_line = map[i];
+                var map_line = map[i];
                 for(var j = 0; j < map_line.length; j++) {
                     for(var k = 0; k < barriers.length; k++){
                         if(i+1 == barriers[k][0] && j+1==barriers[k][1]){
@@ -41,10 +23,168 @@
                     
                 }
             }
+            return map;
         }
-        //canStep(){}           //ha jók a szomszédok, akkor tud abba az irányba lépni
-        //swap(){}              //megfordul
-        //isBarrier(){}         //van e akadály
+        barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+        function isBarrier(position,barriers){                                    //van e akadály
+            for(var i = 0; i < barriers.length; i++){
+                var barrier_coords = barriers[i];
+                if(barrier_coords[0] === position[0] && barrier_coords[1] === position[1]){
+                    return true
+                }
+            }
+            return false
+        }
+        function neighbours(position, direction){                       //szomszédok megkeresése, ha lelógna a térképről akkor korrigálás
+            var north = [];
+            var east = [];
+            var south = [];
+            var west = [];
+            if(direction == "N"){
+                north = [position[0]-1,position[1]];
+                east = [position[0],position[1]+1];
+                south = [position[0]+1,position[1]];
+                west = [position[0],position[1]-1];
+                if(north[0] == 0){
+                    north[0] = 8;
+                }
+                if(east[1] == 9){
+                    east[1] = 1;
+                }
+                if(south[0] == 9){
+                    south[0] = 1;
+                }
+                if(west[1] == 0){
+                    west[1] = 8;
+                }                
+                
+            }else  if(direction == "E"){
+                north = [position[0],position[1]+1];
+                east = [position[0]+1,position[1]];
+                south = [position[0],position[1]-1];
+                west = [position[0]-1,position[1]];
+                if(north[1] == 9){
+                    north[1] = 1;
+                }
+                if(east[0] == 9){
+                    east[0] = 1;
+                }
+                if(south[1] == 0){
+                    south[1] = 8;
+                }
+                if(west[0] == 0){
+                    west[0] = 8;
+                }        
+            }else  if(direction == "S"){
+                north = [position[0]+1,position[1]];
+                east = [position[0],position[1]-1];
+                south = [position[0]-1,position[1]];
+                west = [position[0],position[1]+1];
+                if(north[0] == 9){
+                    north[0] = 1;
+                }
+                if(east[1] == 0){
+                    east[1] = 8;
+                }
+                if(south[0] == 0){
+                    south[0] = 8;
+                }
+                if(west[1] == 9){
+                    west[1] = 1;
+                }        
+            }else  if(direction == "W"){
+                north = [position[0],position[1]-1];
+                east = [position[0]-1,position[1]];
+                south = [position[0],position[1]+1];
+                west = [position[0]+1,position[1]];
+                if(north[1] == 0){
+                    north[1] = 8;
+                }
+                if(east[0] == 0){
+                    east[0] = 8;
+                }
+                if(south[1] == 9){
+                    south[1] = 1;
+                }
+                if(west[0] == 9){
+                    west[0] = 1;
+                }        
+            }
+            const neighbourPairs = [north,east,south,west]
+            return neighbourPairs;
+        }
+        function canStep(barriers,position,direction,move){                                              //ha jók a szomszédok, akkor tud abba az irányba lépni
+            neighboursValue = neighbours(position,direction);
+            const northNeighbour = neighboursValue[0];
+            const eastNeighbour = neighboursValue[1];
+            const southNeighbour = neighboursValue[2];
+            const westNeighbour = neighboursValue[3];
+            if(move == "f"){
+                if(isBarrier(northNeighbour,barriers)){
+                    return "x";
+                }else return "O";
+            }
+            if(move == "b"){
+                if(isBarrier(southNeighbour,barriers)){
+                    return "x";
+                }else return "O";
+            }
+            if(move == "r"){
+                if(isBarrier(eastNeighbour,barriers)){
+                    return "x";
+                }else return "O";
+            }
+            if(move == "l"){
+                if(isBarrier(westNeighbour,barriers)){
+                    return "x";
+                }else return "O";
+            }
+            return null;
+        }
+        function holdjaro(path,barriers,direction,coords){
+            map =   [
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+                [' ',' ',' ',' ',' ',' ',' ',' '],
+            ];
+            map = setBarriers(map,barriers);
+            if(isBarrier(coords,barriers)){
+                return map;
+            }else map[coords[0]-1][coords[1]-1] = "O";
+            for(var i = 0; i < path.length; i++){
+                var move = path[i];
+                if(canStep(barriers,coords,direction,move) == "O"){
+                    neighboursValue = neighbours(coords,direction);
+                    const northNeighbour = neighboursValue[0];
+                    const eastNeighbour = neighboursValue[1];
+                    const southNeighbour = neighboursValue[2];
+                    const westNeighbour = neighboursValue[3];
+                    if(move == "f"){
+                        map[northNeighbour[0]-1][northNeighbour[1]-1] = "O";
+                        coords = northNeighbour;
+                    }
+                    if(move == "b"){
+                        map[southNeighbour [0]-1][southNeighbour [1]-1] = "O";
+                        coords = southNeighbour;
+                    }
+                    if(move == "r"){
+                        map[eastNeighbour[0]-1][eastNeighbour[1]-1] = "O";
+                        coords = eastNeighbour;
+                    }
+                    if(move == "l"){
+                        map[westNeighbour[0]-1][westNeighbour[1]-1] = "O";
+                        coords = westNeighbour;
+                    }
+                    
+                }else break;
+            }
+            return map;
+        }
         //step(){               //kap egy irányt hogy merre néz és egy utasítást, elvégzi a lépést
 
        // }
@@ -81,6 +221,157 @@
                 ];
             setBarriers(map, barriers)
             assert.deepEqual(map, expected_map);
+        });
+    });
+    QUnit.module('IsBarrier test', function() {
+        QUnit.test('[1,2] esetén:', function(assert) {
+            position=[1,2]
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            
+            assert.equal(isBarrier(position, barriers), false);
+        });
+        QUnit.test('[4,1] esetén:', function(assert) {
+            position=[4,1]
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            
+            assert.equal(isBarrier(position, barriers), true);
+        });
+        QUnit.test('[7, 2] esetén:', function(assert) {
+            position=[7, 2]
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            
+            assert.equal(isBarrier(position, barriers), true);
+        });
+        QUnit.test('[9, 9] esetén:', function(assert) {
+            position=[9, 9]
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            
+            assert.equal(isBarrier(position, barriers), false);
+        });
+    });
+    QUnit.module('Neighbours test', function () {
+        QUnit.test('Test neighbours with North direction', function (assert) {
+            const position = [3, 5];
+            const neighboursTest = neighbours(position, "N");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [2, 5], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [3, 6], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [4, 5], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [3, 4], 'West neighbour is correct');
+        });
+        QUnit.test('Test neighbours with East direction', function (assert) {
+            const position = [3, 5];
+            const neighboursTest = neighbours(position, "E");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [3, 6], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [4, 5], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [3, 4], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [2, 5], 'West neighbour is correct');
+        });
+
+        QUnit.test('Test neighbours with South direction', function (assert) {
+            const position = [3, 5];
+            const neighboursTest = neighbours(position, "S");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [4, 5], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [3, 4], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [2, 5], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [3, 6], 'West neighbour is correct');
+        });
+
+        QUnit.test('Test neighbours with West direction', function (assert) {
+            const position = [3, 5];
+            const neighboursTest = neighbours(position, "W");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [3, 4], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [2, 5], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [3, 6], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [4, 5], 'West neighbour is correct');
+        });
+        QUnit.test('Test neighbours with North direction in the left edge', function (assert) {
+            const position = [1, 1];
+            const neighboursTest = neighbours(position, "N");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [8, 1], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [1, 2], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [2, 1], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [1, 8], 'West neighbour is correct');
+        });
+        QUnit.test('Test neighbours with North direction in the right edge', function (assert) {
+            const position = [4,8];
+            const neighboursTest = neighbours(position, "E");
+            const northNeighbour = neighboursTest[0];
+            const eastNeighbour = neighboursTest[1];
+            const southNeighbour = neighboursTest[2];
+            const westNeighbour = neighboursTest[3];
+            assert.deepEqual(northNeighbour, [4,1], 'North neighbour is correct');
+            assert.deepEqual(eastNeighbour, [5,8], 'East neighbour is correct');
+            assert.deepEqual(southNeighbour, [4,7], 'South neighbour is correct');
+            assert.deepEqual(westNeighbour, [3,8], 'West neighbour is correct');
+        });
+    });
+    QUnit.module('CanStep test', function () {
+        QUnit.test('canStep function with barrier', function (assert) {
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4] ];
+            const position = [1, 7];
+            assert.deepEqual(canStep(barriers,position,"N","r"), "x", "Can't step right");
+        });
+        QUnit.test('canStep function with barrier', function (assert) {
+            barriers = [ [3, 5],[7, 2],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4],[1,1] ];
+            const position = [1, 8];
+            assert.deepEqual(canStep(barriers,position,"E","f"), "x", "Can't step forward");
+        });
+        QUnit.test('canStep function with barrier', function (assert) {
+            barriers = [ [3, 5],[7, 2],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2],[1, 4],[1,1] ];
+            const position = [8, 8];
+            assert.deepEqual(canStep(barriers,position,"E","b"), "O", "Can step backward");
+        });
+    });
+    QUnit.module('Holdajro test', function () {
+        QUnit.test('Holdajro test', function (assert) {
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2] ];
+            const position = [1, 7];
+            expected_map=  [
+                    ['O','O','O','O',' ',' ',' ','x'],
+                    [' ',' ',' ',' ',' ',' ','x',' '],
+                    [' ','x',' ',' ','x',' ',' ',' '],
+                    ['x',' ',' ',' ',' ',' ',' ',' '],
+                    [' ',' ',' ',' ',' ','x',' ',' '],
+                    [' ',' ',' ','x',' ',' ',' ',' '],
+                    [' ','x',' ',' ',' ',' ',' ',' '],
+                    [' ',' ','x',' ',' ',' ',' ',' ']
+            ];
+            assert.deepEqual(holdjaro("rrr",barriers,"N",[1,1]), expected_map, "3 right step");
+        });
+        QUnit.test('Holdajro test', function (assert) {
+            barriers = [ [3, 5],[7, 2],[1, 8],[6, 4],[2, 7],[4, 1],[8, 3],[5, 6],[3, 2]];
+            const position = [5, 3];
+            expected_map=  [
+                    [' ',' ',' ',' ',' ',' ',' ','x'],
+                    [' ',' ',' ',' ',' ',' ','x',' '],
+                    [' ','x',' ',' ','x',' ',' ',' '],
+                    ['x',' ',' ',' ','O',' ',' ',' '],
+                    [' ',' ','O','O','O','x',' ',' '],
+                    [' ',' ',' ','x',' ',' ',' ',' '],
+                    [' ','x',' ',' ',' ',' ',' ',' '],
+                    [' ',' ','x',' ',' ',' ',' ',' ']
+            ];
+            assert.deepEqual(holdjaro("ffll",barriers,"E",position), expected_map, "ffll");
         });
     });
     </script>
